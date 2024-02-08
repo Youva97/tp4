@@ -1,0 +1,35 @@
+<% layout("layout.eta") %>
+
+
+<div class="container-fluid">
+	<div class="row">
+		<div class="col px-0">
+			<div id="carouselExample" class="carousel slide">
+				<div class="carousel-inner">
+					<div class="carousel-item active">
+						<img src="/Photo-quisommesnous.jpg" style="width: 100%; height: 450px; object-fit: cover;" alt="...">
+					</div>
+					<div class="carousel-item">
+						<img src="/affichage-realiste-bijoux-or-argent.avif" style="width: 100%; height: 450px; object-fit: cover;" alt="...">
+					</div>
+				</div>
+				<button class="carousel-control-prev" type="button" data-bs-target="#carouselExample" data-bs-slide="prev">
+					<span class="carousel-control-prev-icon" aria-hidden="true"></span>
+					<span class="visually-hidden">Previous</span>
+				</button>
+				<button class="carousel-control-next" type="button" data-bs-target="#carouselExample" data-bs-slide="next">
+					<span class="carousel-control-next-icon" aria-hidden="true"></span>
+					<span class="visually-hidden">Next</span>
+				</button>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="container">
+	<div class="row">
+		<div class="col">
+			Bienvenue dans notre société de bijoux. Nous sommes heureux de vous offrir une collection unique et élégante de bijoux pour tous les styles et occasions. Nos bijoux sont fabriqués avec des matériaux de haute qualité et conçus avec soin pour assurer que chaque pièce est belle et durable. Nous espérons que vous trouverez la pièce parfaite qui ajoutera une touche spéciale à votre look.
+
+		</div>
+	</div>
+</div>

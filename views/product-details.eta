@@ -1,0 +1,14 @@
+<% layout("layout.eta") %>
+
+<div class="container">
+	<div class="row mt-5">
+		<div class="col-md-4">
+			<img src="/168289C01_V2_RGB.webp" class="img-fluid" alt="">
+		</div>
+		<div class="col-md-8">
+			<h1><%= it.product.name %></h1>
+			<h2><%= it.product.price/100 %>€</h2>
+			<p><%= it.product.description %></p>
+		</div>
+	</div>
+</div>
