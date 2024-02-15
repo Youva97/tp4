@@ -1,31 +1,43 @@
 const { sequelize, DataTypes } = require("./db.js");
 
-const User = sequelize.define("User", {
+const Customer = sequelize.define("Customer", {
   id: {
     type: DataTypes.INTEGER,
     primaryKey: true,
     autoIncrement: true,
   },
+  name: {
+    type: DataTypes.STRING,
+    defaultValue: "",
+  },
   firstname: {
     type: DataTypes.STRING,
     defaultValue: "",
   },
-  lastname: {
+  address1: {
     type: DataTypes.STRING,
     defaultValue: "",
   },
-  login: {
+  address2: {
     type: DataTypes.STRING,
     defaultValue: "",
   },
-  password: {
+  zipCode: {
     type: DataTypes.STRING,
     defaultValue: "",
   },
-  token: {
+  city: {
+    type: DataTypes.STRING,
+    defaultValue: "",
+  },
+  email: {
+    type: DataTypes.STRING,
+    defaultValue: "",
+  },
+  phone: {
     type: DataTypes.STRING,
     defaultValue: "",
   },
 });
 
-module.exports = User;
+module.exports = Customer;

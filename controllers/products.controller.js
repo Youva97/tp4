@@ -1,4 +1,4 @@
-const { Product, Type } = require("../models");
+const { Product } = require("../models");
 
 module.exports = function (app) {
   app.get("/v1/products", async function (req, res) {
@@ -24,13 +24,13 @@ module.exports = function (app) {
     const product = await Product.findByPk(req.params.id);
     if (!product) return res.json({ error: "not_found" });
     await product.update(req.body);
-    res.json({ data: product, error });
+    res.json({ data: product, error: null });
   });
 
   app.delete("/v1/products/:id", async function (req, res) {
     const product = await Product.findByPk(req.params.id);
     if (!product) return res.json({ error: "not_found" });
     await product.destroy();
-    res.json({ data: product, error });
+    res.json({ data: product, error: null });
   });
 };
