@@ -35,8 +35,8 @@ async function initDatabase() {
       path.join(__dirname, "lastModificationModels.json"),
       JSON.stringify(lastModificationModels, null, 4)
     );
-    await sequelize.sync({ alter });
-    console.log("🚀 ~ initDatabase ~ alter:", alter);
+    await sequelize.sync({ alter: true });
+    //console.log("🚀 ~ initDatabase ~ alter:", alter);
   } catch (error) {
     console.error("Unable to connect to the database:", error);
     process.exit(1);
@@ -85,9 +85,11 @@ init();
 
 async function bootstrap() {
   const { fakerFR: faker } = require("@faker-js/faker");
-  const { Type, Product } = require("./models/index.js");
+  const { Type, Product, User, Customer } = require("./models/index.js");
   // on rempli la base de données
   let types = await Type.findAll();
+  let users = await User.findAll();
+  let customers = await Customer.findAll();
   if (types.length < 3) {
     for (let i = 0; i < 3; i++) {
       await Type.create({
@@ -100,6 +102,30 @@ async function bootstrap() {
         description: faker.commerce.productDescription(),
         price: faker.commerce.price({ min: 1000, max: 10000 }),
         typeId: faker.number.int({ min: 1, max: 3 }),
+      });
+    }
+  }
+  if (users.length < 4) {
+    for (let iP = 0; iP < 4; iP++) {
+      await User.create({
+        firstname: faker.person.firstName(),
+        lastname: faker.person.firstName(),
+        login: faker.internet.userName(),
+        password: faker.internet.password(),
+      });
+    }
+  }
+  if (customers.length < 20) {
+    for (let iP = 0; iP < 20; iP++) {
+      await Customer.create({
+        firstName: faker.person.firstName(),
+        lastName: faker.person.firstName(),
+        adress1: faker.location.streetAddress(),
+        adress2: faker.location.streetAddress(),
+        zipcode: faker.location.zipCode(),
+        city: faker.location.city(),
+        email: faker.internet.email(),
+        phone: faker.phone.number(),
       });
     }
   }

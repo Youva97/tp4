@@ -6,7 +6,7 @@ module.exports = function (app) {
       const types = await Type.findAll();
       res.json({ data: types, error: null });
     } catch (error) {
-      res.json({ data: null, error: error.message });
+      res.json({ data: null, error: null });
     }
   });
 

@@ -1,5 +1,6 @@
 const { User } = require("../models");
 const uuid = require("uuid");
+const token = uuid.v4();
 
 module.exports = function (app) {
   // récupérer un utilisateur
@@ -43,11 +44,11 @@ module.exports = function (app) {
       if (!user) {
         res.json({ data: null, error: "not_found" });
       } else {
-        await user.update(req.body);
+        await user.update(req.body, { where: { id: req.params.id } });
         res.json({ data: user, error: null });
       }
     } catch (error) {
-      res.json({ data: null, error: error.message });
+      res.json({ data: null, error: null });
     }
   });
 
@@ -83,10 +84,10 @@ module.exports = function (app) {
       if (!user.token) {
         const token = uuid.v4();
 
-        await user.update({ token });
+        user = await user.update({ token });
       }
 
-      res.json({ user, token: user.token });
+      res.json({ data: user, token: user.token });
     } catch (error) {
       res.status(500).json({ error: error.message });
     }
