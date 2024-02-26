@@ -46,6 +46,16 @@ const Customer = sequelize.define("Customer", {
     allowNull: null,
     defaultValue: "",
   },
+  userId: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    references: {
+      model: "users", // Nom de la table tel qu'il apparaît dans la base de données
+      key: "id",
+    },
+    onUpdate: "CASCADE",
+    onDelete: "NO ACTION",
+  },
 });
 
 module.exports = Customer;

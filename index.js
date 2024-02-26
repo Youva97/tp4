@@ -6,7 +6,7 @@ const app = express();
 const fs = require("fs");
 
 async function initDatabase() {
-  const { sequelize } = require("./models/index.js");
+  const { sequelize, Invoice } = require("./models/index.js");
 
   try {
     let files = fs.readdirSync(path.join(__dirname, "models"));
@@ -66,6 +66,7 @@ function initControllers() {
   require("./controllers/types.controller")(app);
   require("./controllers/users.controller.js")(app);
   require("./controllers/customers.controller")(app);
+  require("./controllers/invoices.controller")(app);
 }
 console.log(process.env.PORT);
 function initServer() {
@@ -85,11 +86,18 @@ init();
 
 async function bootstrap() {
   const { fakerFR: faker } = require("@faker-js/faker");
-  const { Type, Product, User, Customer } = require("./models/index.js");
+  const {
+    Type,
+    Product,
+    User,
+    Customer,
+    Invoice,
+  } = require("./models/index.js");
   // on rempli la base de données
   let types = await Type.findAll();
   let users = await User.findAll();
   let customers = await Customer.findAll();
+  let invoices = await Invoice.findAll();
   if (types.length < 3) {
     for (let i = 0; i < 3; i++) {
       await Type.create({
@@ -109,24 +117,52 @@ async function bootstrap() {
     for (let iP = 0; iP < 4; iP++) {
       await User.create({
         firstname: faker.person.firstName(),
-        lastname: faker.person.firstName(),
+        lastname: faker.person.lastName(),
         login: faker.internet.userName(),
         password: faker.internet.password(),
       });
     }
   }
+
   if (customers.length < 20) {
     for (let iP = 0; iP < 20; iP++) {
-      await Customer.create({
-        firstName: faker.person.firstName(),
-        lastName: faker.person.firstName(),
-        adress1: faker.location.streetAddress(),
-        adress2: faker.location.streetAddress(),
-        zipcode: faker.location.zipCode(),
-        city: faker.location.city(),
-        email: faker.internet.email(),
-        phone: faker.phone.number(),
-      });
+      const randomUserIndex = Math.floor(Math.random() * users.length);
+      const randomUser = users[randomUserIndex]; // Ceci devrait maintenant toujours être défini
+
+      if (randomUser) {
+        // Vérifie si randomUser n'est pas undefined
+        await Customer.create({
+          firstname: faker.person.firstName(),
+          name: faker.person.lastName(),
+          address1: faker.location.streetAddress(),
+          address2: faker.location.secondaryAddress(),
+          zipCode: faker.location.zipCode(),
+          city: faker.location.city(),
+          email: faker.internet.email(),
+          phone: faker.phone.number(),
+          userId: randomUser.id,
+        });
+      }
+    }
+  }
+  if (invoices.length < 20) {
+    for (let l = 0; l < 20; l++) {
+      // Assurez-vous d'avoir des clients avant de continuer
+      if (customers.length > 0) {
+        const randomCustomerId = Math.floor(Math.random() * customers.length);
+        const randomCustomer = customers[randomCustomerId]; // Ceci devrait être l'objet client
+        const randomPrice = faker.commerce.price(); // Génère un prix aléatoire
+
+        await Invoice.create({
+          date: faker.date.past(), // Utilise faker pour générer une date passée aléatoire
+          customerId: randomCustomer.id, // Utilisez l'ID du client ici
+          totalHt: randomPrice,
+          totalTtc: randomPrice, // Pour simplifier, nous utilisons le même prix pour HT et TTC
+        });
+      } else {
+        console.error("Aucun client trouvé pour créer une facture.");
+        break; // Sortez de la boucle si aucun client n'est trouvé
+      }
     }
   }
 }
