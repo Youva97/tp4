@@ -1,7 +1,8 @@
 const { Customer } = require("../models");
+const auth = require('../middlewares/auth.middleware');
 
 module.exports = function (app) {
-  app.get("/v1/customers", async function (req, res) {
+  app.get("/v1/customers",auth, async function (req, res) {
     try {
       const customers = await Customer.findAll();
       res.json({ data: customers, error: null });
@@ -10,7 +11,7 @@ module.exports = function (app) {
     }
   });
 
-  app.get("/v1/customers/:id", async function (req, res) {
+  app.get("/v1/customers/:id",auth, async function (req, res) {
     const { id } = req.params;
     try {
       const customer = await Customer.findByPk(id);
@@ -23,7 +24,7 @@ module.exports = function (app) {
     }
   });
 
-  app.post("/v1/customers", async function (req, res) {
+  app.post("/v1/customers",auth, async function (req, res) {
     try {
       const customer = await Customer.create(req.body);
       
@@ -34,7 +35,7 @@ module.exports = function (app) {
   });
 
   // Route PUT pour mettre à jour un client existant
-  app.put("/v1/customers/:id", async function (req, res) {
+  app.put("/v1/customers/:id",auth, async function (req, res) {
     const { id } = req.params;
     try {
       const customer = await Customer.findByPk(id);
@@ -49,7 +50,7 @@ module.exports = function (app) {
   });
 
   // Route DELETE pour supprimer un client existant
-  app.delete("/v1/customers/:id", async function (req, res) {
+  app.delete("/v1/customers/:id",auth, async function (req, res) {
     const { id } = req.params;
     try {
       const customer = await Customer.findByPk(id);

@@ -1,7 +1,8 @@
 const { Type } = require("../models");
+const auth = require('../middlewares/auth.middleware');
 
 module.exports = function (app) {
-  app.get("/v1/types", async function (req, res) {
+  app.get("/v1/types",auth, async function (req, res) {
     try {
       const types = await Type.findAll();
       res.json({ data: types, error: null });
@@ -10,7 +11,7 @@ module.exports = function (app) {
     }
   });
 
-  app.get("/v1/types/:id", async function (req, res) {
+  app.get("/v1/types/:id",auth, async function (req, res) {
     try {
       const type = await Type.findByPk(req.params.id);
       if (!type) {
@@ -23,7 +24,7 @@ module.exports = function (app) {
     }
   });
 
-  app.post("/v1/types", async function (req, res) {
+  app.post("/v1/types",auth, async function (req, res) {
     try {
       const type = await Type.create(req.body);
       res.json({ data: type, error: null });
@@ -32,7 +33,7 @@ module.exports = function (app) {
     }
   });
 
-  app.put("/v1/types/:id", async function (req, res) {
+  app.put("/v1/types/:id",auth, async function (req, res) {
     try {
       const type = await Type.findByPk(req.params.id);
       if (!type) {
@@ -46,7 +47,7 @@ module.exports = function (app) {
     }
   });
 
-  app.delete("/v1/types/:id", async function (req, res) {
+  app.delete("/v1/types/:id",auth, async function (req, res) {
     try {
       const type = await Type.findByPk(req.params.id);
       if (!type) {

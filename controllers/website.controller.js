@@ -1,4 +1,5 @@
 const { Product, Type } = require("../models");
+const auth = require('../middlewares/auth.middleware');
 
 module.exports = function (app) {
     app.get("/", function (req, res) {

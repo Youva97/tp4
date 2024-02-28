@@ -1,7 +1,8 @@
 const { Invoice, Invoiceline, sequelize } = require("../models");
+const auth = require('../middlewares/auth.middleware');
 
 module.exports = function (app) {
-  app.get("/v1/invoices", async function (req, res) {
+  app.get("/v1/invoices",auth, async function (req, res) {
     try {
       const invoices = await Invoice.findAll();
       res.json({ data: invoices, error: null });
@@ -10,7 +11,7 @@ module.exports = function (app) {
     }
   });
 
-  app.get("/v1/invoices/:id", async function (req, res) {
+  app.get("/v1/invoices/:id",auth, async function (req, res) {
     const { id } = req.params;
     try {
       const invoice = await Invoice.findByPk(id);
@@ -23,7 +24,7 @@ module.exports = function (app) {
     }
   });
 
-  app.post("/v1/invoices", async function (req, res) {
+  app.post("/v1/invoices",auth, async function (req, res) {
     const t = await sequelize.transaction(); // Démarre une transaction
     try {
       const { invoiceData, lines } = req.body;
@@ -49,7 +50,7 @@ module.exports = function (app) {
     }
   });
 
-  app.put("/v1/invoices/:id", async function (req, res) {
+  app.put("/v1/invoices/:id",auth, async function (req, res) {
     const { id } = req.params;
     const t = await sequelize.transaction(); // Démarre une transaction
     try {
@@ -98,7 +99,7 @@ module.exports = function (app) {
     }
   });
 
-  app.delete("/v1/invoices/:id", async function (req, res) {
+  app.delete("/v1/invoices/:id",auth, async function (req, res) {
     const { id } = req.params;
     try {
       const invoice = await Invoice.findByPk(id);
