@@ -93,11 +93,51 @@ async function bootstrap() {
     Customer,
     Invoice,
   } = require("./models/index.js");
+  let roles = ["admin", "user", "guest"];
+  let resources = [
+    "invoices_list",
+    "invoices_write",
+    "products_list",
+    "products_write",
+    "types_list",
+    "types_write",
+    "customers_list",
+    "customers_write",
+    "users_list",
+    "users_write",
+  ];
+  const {
+    AclResource,
+    AclRole,
+    AclRoleResource,
+  } = require("./models/index.js");
+
   // on rempli la base de données
   let types = await Type.findAll();
   let users = await User.findAll();
   let customers = await Customer.findAll();
   let invoices = await Invoice.findAll();
+  let aclRoles = await AclRole.findAll();
+  if (aclRoles.length == 0) {
+    // écrire une boucle pour insérer les roles
+    for (let role of roles) {
+      await AclRole.create({role: role});
+  }
+  }
+  let aclResources = await AclResource.findAll();
+  if (aclResources.length == 0) {
+    // écrire une boucle pour insérer les resources 
+    for (let resource of resources) {
+      await AclResource.create({resource: resource });
+  }
+  }
+  // on crée les relations que pour l'utilisateur "admin" où on met tout à true
+  let aclRoleResources = await AclRoleResource.findAll();
+  if (aclRoleResources.length === 0) {
+    for (let resource of resources) {
+      await AclRoleResource.create({ role: "admin", resource: resource });
+    }
+  }
   if (types.length < 3) {
     for (let i = 0; i < 3; i++) {
       await Type.create({

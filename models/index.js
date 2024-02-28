@@ -5,6 +5,10 @@ const User = require("./user.model.js");
 const Customer = require("./customers.model.js"); // Assurez-vous que le nom du fichier est correct
 const Invoice = require("./invoice.model.js");
 const Invoiceline = require("./invoiceline.model.js");
+const AclRole = require("./AclRole.model.js");
+const AclResource = require("./AclResource.model.js");
+const AclRoleResource = require("./AclRoleResource.model.js");
+
 
 // Associations pour Type et Product
 Product.belongsTo(Type, { foreignKey: "typeId", as: "type" });
@@ -31,4 +35,7 @@ module.exports = {
   Customer,
   Invoice,
   Invoiceline,
+  AclRole,
+  AclResource,
+  AclRoleResource,
 };
