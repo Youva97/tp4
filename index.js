@@ -2,6 +2,7 @@ require("dotenv").config();
 const path = require("path");
 const express = require("express");
 const app = express();
+const cors = require("cors");
 
 const fs = require("fs");
 
@@ -44,6 +45,8 @@ async function initDatabase() {
 }
 
 async function initMiddlewares() {
+  app.use(cors());
+
   const bodyParser = require("body-parser");
   app.use(bodyParser.urlencoded({ extended: false }));
   app.use(bodyParser.json());
@@ -116,20 +119,21 @@ async function bootstrap() {
   let types = await Type.findAll();
   let users = await User.findAll();
   let customers = await Customer.findAll();
+  let products = await Product.findAll();
   let invoices = await Invoice.findAll();
   let aclRoles = await AclRole.findAll();
   if (aclRoles.length == 0) {
     // écrire une boucle pour insérer les roles
     for (let role of roles) {
-      await AclRole.create({role: role});
-  }
+      await AclRole.create({ role: role });
+    }
   }
   let aclResources = await AclResource.findAll();
   if (aclResources.length == 0) {
-    // écrire une boucle pour insérer les resources 
+    // écrire une boucle pour insérer les resources
     for (let resource of resources) {
-      await AclResource.create({resource: resource });
-  }
+      await AclResource.create({ resource: resource });
+    }
   }
   // on crée les relations que pour l'utilisateur "admin" où on met tout à true
   let aclRoleResources = await AclRoleResource.findAll();
@@ -144,11 +148,13 @@ async function bootstrap() {
         name: faker.commerce.productMaterial(),
       });
     }
+  }
+  if(products.length < 20){
     for (let iP = 0; iP < 20; iP++) {
       await Product.create({
         name: faker.commerce.productName(),
         description: faker.commerce.productDescription(),
-        price: faker.commerce.price({ min: 1000, max: 10000 }),
+        priceHt: faker.commerce.price({ min: 1000, max: 10000 }),
         typeId: faker.number.int({ min: 1, max: 3 }),
       });
     }

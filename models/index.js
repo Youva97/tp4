@@ -18,6 +18,9 @@ Type.hasMany(Product, { foreignKey: "typeId", as: "products" });
 Customer.belongsTo(User, { foreignKey: "userId", as: "user" });
 User.hasMany(Customer, { foreignKey: "userId", as: "customers" });
 
+
+Customer.hasMany(Invoice,{foreignKey: "customerId", as: "invoices"});
+
 // Associations correctes pour Invoice et Invoiceline
 
 Invoice.hasMany(Invoiceline, { as: "lines", foreignKey: "invoiceId" });

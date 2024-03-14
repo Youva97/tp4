@@ -4,7 +4,7 @@ const auth = require('../middlewares/auth.middleware');
 module.exports = function (app) {
   app.get("/v1/customers",auth, async function (req, res) {
     try {
-      const customers = await Customer.findAll();
+      const customers = await Customer.findAll({include: ["invoices"]});
       res.json({ data: customers, error: null });
     } catch (error) {
       res.status(500).json({ error: error.message });
