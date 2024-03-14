@@ -9,7 +9,6 @@ const AclRole = require("./AclRole.model.js");
 const AclResource = require("./AclResource.model.js");
 const AclRoleResource = require("./AclRoleResource.model.js");
 
-
 // Associations pour Type et Product
 Product.belongsTo(Type, { foreignKey: "typeId", as: "type" });
 Type.hasMany(Product, { foreignKey: "typeId", as: "products" });
@@ -18,8 +17,7 @@ Type.hasMany(Product, { foreignKey: "typeId", as: "products" });
 Customer.belongsTo(User, { foreignKey: "userId", as: "user" });
 User.hasMany(Customer, { foreignKey: "userId", as: "customers" });
 
-
-Customer.hasMany(Invoice,{foreignKey: "customerId", as: "invoices"});
+Customer.hasMany(Invoice, { foreignKey: "customerId", as: "invoices" });
 
 // Associations correctes pour Invoice et Invoiceline
 
