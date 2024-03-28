@@ -1,4 +1,5 @@
 const { User } = require("../models");
+const auth = require('../middlewares/auth.middleware');
 
 const uuid = require("uuid");
 const token = uuid.v4();
@@ -15,7 +16,7 @@ module.exports = function (app) {
   });
 
   // récupérer un utilisateur par son ID
-  app.get("/v1/users/:id", async function (req, res) {
+  app.get("/v1/users/:id", auth, async function (req, res) {
     try {
       const user = await User.findByPk(req.params.id);
       if (!user) {
@@ -23,6 +24,7 @@ module.exports = function (app) {
       } else {
         res.json({ data: user, error: null });
       }
+      user.password = undefined;
     } catch (error) {
       res.json({ data: null, error: error.message });
     }

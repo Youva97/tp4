@@ -1,4 +1,5 @@
 const { sequelize, DataTypes } = require("./db.js");
+const crypto = require('crypto');
 
 const User = sequelize.define("User", {
   id: {
@@ -31,6 +32,22 @@ const User = sequelize.define("User", {
     allowNull: null,
     defaultValue: "",
   },
+  role: {
+    type: DataTypes.STRING,
+  },
+}, {
+  indexes: [
+      {
+          fields: ["login"]
+      },
+  ],
+  hooks: {
+      beforeSave: (user) => {
+          if (user.changed('password')) {
+              user.password = crypto.createHash('sha256').update(user.password).digest('hex');
+          }
+      }
+  }
 });
 
 module.exports = User;

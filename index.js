@@ -149,7 +149,7 @@ async function bootstrap() {
       });
     }
   }
-  if(products.length < 20){
+  if (products.length < 20) {
     for (let iP = 0; iP < 20; iP++) {
       await Product.create({
         name: faker.commerce.productName(),
