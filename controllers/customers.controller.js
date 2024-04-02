@@ -1,33 +1,36 @@
 const { Customer } = require("../models");
-const auth = require('../middlewares/auth.middleware');
+const auth = require("../middlewares/auth.middleware");
 
 module.exports = function (app) {
-  app.get("/v1/customers",auth, async function (req, res) {
+  app.get("/v1/customers", auth, async function (req, res) {
     try {
-      const customers = await Customer.findAll({include: ["invoices"]});
+      const customers = await Customer.findAll({ include: ["invoices"] });
       res.json({ data: customers, error: null });
     } catch (error) {
       res.status(500).json({ error: error.message });
     }
   });
 
-  app.get("/v1/customers/:id",auth, async function (req, res) {
-    const { id } = req.params;
+  app.get("/v1/customers/:id", auth, async function (req, res) {
+    const customerId = req.params.id;
     try {
-      const customer = await Customer.findByPk(id);
-      if (!customer) {
+      if (!customerId) {
         return res.status(404).json({ error: "Client introuvable" });
       }
-      res.json({ data: customer, error: null });
+      const customer = await Customer.findByPk(customerId);
+      if (!customer) {
+        return res.status(404).json({ data: null, error: "User not found" });
+      }
+      return res.json({ data: customer, error: null });
     } catch (error) {
       res.status(500).json({ error: error.message });
     }
   });
 
-  app.post("/v1/customers",auth, async function (req, res) {
+  app.post("/v1/customers", auth, async function (req, res) {
     try {
       const customer = await Customer.create(req.body);
-      
+
       res.json({ data: customer, error: null });
     } catch (error) {
       res.status(500).json({ error: error.message });
@@ -35,7 +38,7 @@ module.exports = function (app) {
   });
 
   // Route PUT pour mettre à jour un client existant
-  app.put("/v1/customers/:id",auth, async function (req, res) {
+  app.put("/v1/customers/:id", auth, async function (req, res) {
     const { id } = req.params;
     try {
       const customer = await Customer.findByPk(id);
@@ -50,7 +53,7 @@ module.exports = function (app) {
   });
 
   // Route DELETE pour supprimer un client existant
-  app.delete("/v1/customers/:id",auth, async function (req, res) {
+  app.delete("/v1/customers/:id", auth, async function (req, res) {
     const { id } = req.params;
     try {
       const customer = await Customer.findByPk(id);

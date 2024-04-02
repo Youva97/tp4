@@ -1,5 +1,5 @@
 const { User } = require("../models");
-const auth = require('../middlewares/auth.middleware');
+const auth = require("../middlewares/auth.middleware");
 
 const uuid = require("uuid");
 const token = uuid.v4();
@@ -16,17 +16,22 @@ module.exports = function (app) {
   });
 
   // récupérer un utilisateur par son ID
-  app.get("/v1/users/:id", auth, async function (req, res) {
+  app.get("/v1/users/:id", async function (req, res) {
     try {
-      const user = await User.findByPk(req.params.id);
-      if (!user) {
-        res.json({ data: null, error: "not_found" });
-      } else {
-        res.json({ data: user, error: null });
+      const userId = req.params.id;
+      // Assurez-vous que userId n'est pas null ou undefined
+      if (!userId) {
+        return res.status(400).json({ error: "ID parameter is missing" });
       }
+      const user = await User.findByPk(userId);
+      if (!user) {
+        return res.status(404).json({ data: null, error: "User not found" });
+      }
+      // Supprimer le mot de passe de la réponse
       user.password = undefined;
+      return res.json({ data: user, error: null });
     } catch (error) {
-      res.json({ data: null, error: error.message });
+      return res.status(500).json({ data: null, error: error.message });
     }
   });
 
