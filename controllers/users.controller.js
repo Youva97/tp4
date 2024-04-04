@@ -18,12 +18,8 @@ module.exports = function (app) {
   // récupérer un utilisateur par son ID
   app.get("/v1/users/:id", async function (req, res) {
     try {
-      const userId = req.params.id;
+      const user = await User.findByPk(req.params.id);
       // Assurez-vous que userId n'est pas null ou undefined
-      if (!userId) {
-        return res.status(400).json({ error: "ID parameter is missing" });
-      }
-      const user = await User.findByPk(userId);
       if (!user) {
         return res.status(404).json({ data: null, error: "User not found" });
       }
@@ -76,25 +72,19 @@ module.exports = function (app) {
   });
 
   app.post("/v1/signin", async function (req, res) {
-    const { login, password } = req.body;
 
     try {
-      let user = await User.findOne({ where: { login } });
-
+      const user = await User.findOne({ where: { login: req.body.login } });
       if (!user) {
         return res.status(404).json({ error: "Utilisateur introuvable" });
       }
-
       if (password !== user.password) {
         return res.status(401).json({ error: "Mot de passe incorrect" });
       }
-
       if (!user.token) {
         const token = uuid.v4();
-
         user = await user.update({ token });
       }
-
       res.json({ data: user, token: user.token });
     } catch (error) {
       res.status(500).json({ error: error.message });

@@ -37,7 +37,7 @@ const User = sequelize.define(
     role: {
       type: DataTypes.STRING,
     },
-  } /* , {
+  } , {
   indexes: [
       {
           fields: ["login"]
@@ -50,7 +50,7 @@ const User = sequelize.define(
           }
       }
   }
-} */
+}
 );
 
 module.exports = User;
