@@ -50,7 +50,9 @@ const User = sequelize.define(
           }
       }
   }
+});
+User.prototype.validPassword = function (password) {
+  return this.password === crypto.createHash('sha256').update(password).digest('hex');
 }
-);
 
 module.exports = User;
