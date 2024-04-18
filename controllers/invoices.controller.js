@@ -84,7 +84,7 @@ module.exports = function (app) {
         });
       }
 
-      await invoice.update({ totalHt, totalTtc }, { transaction: t });
+      await invoice.update(req.body);
       await t.commit(); // Validation de la transaction
 
       const updatedInvoice = await Invoice.findByPk(id, {

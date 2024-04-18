@@ -5,7 +5,6 @@ const uuid = require("uuid");
 const token = uuid.v4();
 
 module.exports = function (app) {
-  console.log("toto");
   // récupérer un utilisateur
   app.get("/v1/users", async function (req, res) {
     try {
@@ -73,17 +72,17 @@ module.exports = function (app) {
   });
 
   app.post("/v1/signin", async function (req, res) {
-
     try {
       const user = await User.findOne({ where: { login: req.body.login } });
       if (!user) {
         return res.status(404).json({ error: "Utilisateur introuvable" });
-      } 
-/*       if (password !== user.password) {
+      }
+      /*       if (password !== user.password) {
         return res.status(401).json({ error: "Mot de passe incorrect" });
       } */
 
-      if (!user.validPassword(req.body.password)) return res.json({ error: 'invalid_password' });
+      if (!user.validPassword(req.body.password))
+        return res.json({ error: "invalid_password" });
       if (!user.token) {
         const token = uuid.v4();
         user = await user.update({ token });
