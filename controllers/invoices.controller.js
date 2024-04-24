@@ -1,20 +1,23 @@
 const { Invoice, Invoiceline, sequelize } = require("../models");
-const auth = require('../middlewares/auth.middleware');
+const auth = require("../middlewares/auth.middleware");
 
 module.exports = function (app) {
-  app.get("/v1/invoices",auth, async function (req, res) {
+  app.get("/v1/invoices", auth, async function (req, res) {
     try {
-      const invoices = await Invoice.findAll();
+      const invoices = await Invoice.findAll({ include: ['customer'] });
       res.json({ data: invoices, error: null });
     } catch (error) {
       res.status(500).json({ error: error.message });
     }
   });
 
-  app.get("/v1/invoices/:id",auth, async function (req, res) {
+  app.get("/v1/invoices/:id", auth, async function (req, res) {
     const { id } = req.params;
     try {
-      const invoice = await Invoice.findByPk(id);
+      const invoice = await Invoice.findByPk(id, {
+        include: [{ model: Invoiceline, as: "lines" }],
+      });
+
       if (!invoice) {
         return res.status(404).json({ error: "Facture introuvable" });
       }
@@ -24,7 +27,7 @@ module.exports = function (app) {
     }
   });
 
-  app.post("/v1/invoices",auth, async function (req, res) {
+  app.post("/v1/invoices", auth, async function (req, res) {
     const t = await sequelize.transaction(); // Démarre une transaction
     try {
       const { invoiceData, lines } = req.body;
@@ -50,20 +53,16 @@ module.exports = function (app) {
     }
   });
 
-  app.put("/v1/invoices/:id",auth, async function (req, res) {
-    const { id } = req.params;
+  app.put("/v1/invoices/:id", auth, async function (req, res) {
     const t = await sequelize.transaction(); // Démarre une transaction
     try {
-      const invoice = await Invoice.findByPk(id);
+      const invoice = await Invoice.findByPk(req.params.id);
       if (!invoice) {
         await t.rollback();
         return res.status(404).json({ error: "Facture introuvable" });
       }
 
-      await Invoiceline.destroy({
-        where: { invoiceId: id },
-        transaction: t, // Utilisation de la transaction pour cette opération
-      });
+      await Invoiceline.destroy({ where: { invoiceId: invoice.id }, transaction: t });
 
       let totalHt = 0;
       let totalTtc = 0;
@@ -92,20 +91,20 @@ module.exports = function (app) {
       });
       res.json({ data: updatedInvoice, error: null });
     } catch (error) {
-      if (!t.finished) {
+      if (!t.finished('commit')) {
         await t.rollback();
       }
       return res.status(500).json({ error: error.message });
     }
   });
 
-  app.delete("/v1/invoices/:id",auth, async function (req, res) {
-    const { id } = req.params;
+  app.delete("/v1/invoices/:id", auth, async function (req, res) {
     try {
-      const invoice = await Invoice.findByPk(id);
+      const invoice = await Invoice.findByPk(req.params.id);
       if (!invoice) {
         return res.status(404).json({ error: "Facture introuvable" });
       }
+      Invoiceline.destroy({ where: { invoiceId: invoice.id}});
       await invoice.destroy();
       res.status(204).send();
     } catch (error) {
@@ -113,3 +112,5 @@ module.exports = function (app) {
     }
   });
 };
+
+

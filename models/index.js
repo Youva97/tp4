@@ -23,9 +23,12 @@ Customer.hasMany(Invoice, { foreignKey: "customerId", as: "invoices" });
 Invoice.hasMany(Invoiceline, { as: "lines", foreignKey: "invoiceId" });
 Invoiceline.belongsTo(Invoice, { as: "invoice", foreignKey: "invoiceId" });
 
+// Association pour un client au facture
+/* Invoice.belongsTo(Customer, { as:'customer', foreignKey: "customerId"}); */
+
 // Correction pour l'association entre Invoiceline et Product
 Invoiceline.belongsTo(Product, { foreignKey: "productId", as: "product" });
-Product.hasMany(Invoiceline, { foreignKey: "productId", as: "invoicelines" });
+/* Product.hasMany(Invoiceline, { foreignKey: "productId", as: "invoicelines" }); */
 
 module.exports = {
   sequelize,

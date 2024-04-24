@@ -95,6 +95,7 @@ async function bootstrap() {
     User,
     Customer,
     Invoice,
+    Invoiceline,
   } = require("./models/index.js");
   let roles = ["admin", "user", "guest"];
   let resources = [
@@ -121,6 +122,7 @@ async function bootstrap() {
   let customers = await Customer.findAll();
   let products = await Product.findAll();
   let invoices = await Invoice.findAll();
+  let invoicelines = await Invoiceline.findAll();
   let aclRoles = await AclRole.findAll();
   if (aclRoles.length == 0) {
     // écrire une boucle pour insérer les roles
@@ -208,6 +210,49 @@ async function bootstrap() {
       } else {
         console.error("Aucun client trouvé pour créer une facture.");
         break; // Sortez de la boucle si aucun client n'est trouvé
+      }
+    }
+  }
+  if (invoices.length < 20) {
+    for (let l = 0; l < 20; l++) {
+      // Assurez-vous d'avoir des clients avant de continuer
+      if (customers.length > 0) {
+        const randomCustomerId = Math.floor(Math.random() * customers.length);
+        const randomCustomer = customers[randomCustomerId]; // Ceci devrait être l'objet client
+        const randomPrice = faker.commerce.price(); // Génère un prix aléatoire
+
+        await Invoice.create({
+          date: faker.date.past(), // Utilise faker pour générer une date passée aléatoire
+          customerId: randomCustomer.id, // Utilisez l'ID du client ici
+          totalHt: randomPrice,
+          totalTtc: randomPrice, // Pour simplifier, nous utilisons le même prix pour HT et TTC
+        });
+      } else {
+        console.error("Aucun client trouvé pour créer une facture.");
+        break; // Sortez de la boucle si aucun client n'est trouvé
+      }
+    }
+  }
+  if (invoicelines.length < 20) {
+    for (let i = 0; i < 20; i++) {
+      // Assurez-vous que vous avez suffisamment de produits et de factures avant de continuer
+      if (invoices.length > 0) {
+        const randomProductId = Math.floor(Math.random() * 20) + 1; // Remplacez 100 par le nombre total de produits dans votre base de données
+        const randomQuantity = Math.floor(Math.random() * 10) + 1; // Générer une quantité aléatoire entre 1 et 10
+        const randomPriceHt = faker.commerce.price(); // Générer un prix HT aléatoire
+
+        await Invoiceline.create({
+          invoiceId: Math.floor(Math.random() * 20) + 1, // Remplacez 20 par le nombre total de factures dans votre base de données
+          productId: randomProductId,
+          quantity: randomQuantity,
+          priceHt: randomPriceHt,
+          productName: faker.commerce.productName(), // Générer un nom de produit fictif
+        });
+      } else {
+        console.error(
+          "Aucune facture trouvée pour créer une ligne de facture."
+        );
+        break; // Sortez de la boucle si aucune facture n'est trouvée
       }
     }
   }
