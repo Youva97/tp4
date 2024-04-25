@@ -4,7 +4,7 @@ const auth = require("../middlewares/auth.middleware");
 module.exports = function (app) {
   app.get("/v1/invoices", auth, async function (req, res) {
     try {
-      const invoices = await Invoice.findAll({ include: ['customer'] });
+      const invoices = await Invoice.findAll({ include: ["customer"] });
       res.json({ data: invoices, error: null });
     } catch (error) {
       res.status(500).json({ error: error.message });
@@ -49,6 +49,7 @@ module.exports = function (app) {
       if (!t.finished) {
         await t.rollback();
       }
+      console.log(error);
       return res.status(500).json({ error: error.message });
     }
   });
@@ -62,7 +63,10 @@ module.exports = function (app) {
         return res.status(404).json({ error: "Facture introuvable" });
       }
 
-      await Invoiceline.destroy({ where: { invoiceId: invoice.id }, transaction: t });
+      await Invoiceline.destroy({
+        where: { invoiceId: invoice.id },
+        transaction: t,
+      });
 
       let totalHt = 0;
       let totalTtc = 0;
@@ -70,7 +74,7 @@ module.exports = function (app) {
       if (req.body.lines && Array.isArray(req.body.lines)) {
         const lines = req.body.lines.map((line) => ({
           ...line,
-          invoiceId: id, // On s'assure que chaque ligne est liée à l'ID de la facture
+          invoiceId: invoice.id, // On s'assure que chaque ligne est liée à l'ID de la facture
         }));
         const createdLines = await Invoiceline.bulkCreate(lines, {
           transaction: t,
@@ -86,14 +90,15 @@ module.exports = function (app) {
       await invoice.update(req.body);
       await t.commit(); // Validation de la transaction
 
-      const updatedInvoice = await Invoice.findByPk(id, {
+      const updatedInvoice = await Invoice.findByPk(invoice.id, {
         include: [{ model: Invoiceline, as: "lines" }],
       });
       res.json({ data: updatedInvoice, error: null });
     } catch (error) {
-      if (!t.finished('commit')) {
+/*       if (!t.finished("commit")) {
         await t.rollback();
-      }
+      } */
+      console.log(error);
       return res.status(500).json({ error: error.message });
     }
   });
@@ -104,13 +109,12 @@ module.exports = function (app) {
       if (!invoice) {
         return res.status(404).json({ error: "Facture introuvable" });
       }
-      Invoiceline.destroy({ where: { invoiceId: invoice.id}});
+      Invoiceline.destroy({ where: { invoiceId: invoice.id } });
       await invoice.destroy();
       res.status(204).send();
     } catch (error) {
+      console.log(error);
       res.status(500).json({ error: error.message });
     }
   });
 };
-
-

@@ -18,6 +18,7 @@ Customer.belongsTo(User, { foreignKey: "userId", as: "user" });
 User.hasMany(Customer, { foreignKey: "userId", as: "customers" });
 
 Customer.hasMany(Invoice, { foreignKey: "customerId", as: "invoices" });
+Invoice.belongsTo(Customer, { foreignKey: "customerId", as: "customer" });
 // Associations correctes pour Invoice et Invoiceline
 
 Invoice.hasMany(Invoiceline, { as: "lines", foreignKey: "invoiceId" });
